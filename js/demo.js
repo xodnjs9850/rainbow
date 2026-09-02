@@ -112,13 +112,13 @@ window.LB = (function () {
   function onKey(e) {
     var tag = (e.target && e.target.tagName) || ""; if (/INPUT|TEXTAREA|SELECT/.test(tag)) return;
     if (e.target && e.target.isContentEditable) return;
+    if (e.repeat) return;
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
     if (e.isComposing || e.keyCode === 229) {          // 한글 IME 상태: 물리 키(e.code)로 N/C/R만 처리
       var c = e.code;
       if (c === "KeyN") toggleNotes(); else if (c === "KeyC") toggleCapture(); else if (c === "KeyR") resetCurrent(); else return;
       e.preventDefault(); return;
     }
-    if (e.repeat) return;
-    if (e.altKey || e.ctrlKey || e.metaKey) return;
     var k = e.key;
     if (k === "ArrowRight") next(); else if (k === "ArrowLeft") prev();
     else if (/^[1-9]$/.test(k)) goTo(parseInt(k, 10));

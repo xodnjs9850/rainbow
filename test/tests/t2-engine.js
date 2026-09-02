@@ -34,6 +34,7 @@
     T.has(document.getElementById("lb-title"), "장면2");
     T.eq(location.hash, "#2");
     T.eq(document.querySelectorAll("#lb-dots .dot.active").length, 1);
+    history.replaceState(null, "", "#9");   // 사용자가 주소창에서 해시를 바꾼 상황
     LB.goTo(9); T.eq(LB.current, 2, "범위 밖 무시");
     T.eq(location.hash, "#2", "잘못된 해시는 현재 장면으로 복원");
   });
@@ -132,5 +133,11 @@
     var bad = stub(1, "student", null, calls); bad.render = function () { throw new Error("boom"); };
     mount([bad, stub(2, "student", null, calls)]);
     T.has(document.getElementById("lb-stage"), "렌더 실패"); LB.next(); T.eq(LB.current, 2);
+  });
+  T.test("engine: 재init이 원본 스냅샷을 덮어쓰지 않는다", function () {
+    var calls = [];
+    window.LB_DATA.hero.character = "변조";
+    mount([stub(1, "student", null, calls)]);
+    T.eq(window.LB_DATA.hero.character, "토토");
   });
 })();
