@@ -3,6 +3,8 @@
 레인보우피크닉(LIXLABS) STEP2 "LIX Buddy"(AI 참여형 맞춤 BLE 안전태그 제작·운영 플랫폼) 소개용 데모 사이트입니다.
 **모든 데이터는 시연용 가상 데이터**이며 실제 학생·학교·AI 출력·BLE 실측치가 아닙니다.
 
+공개 주소: https://xodnjs9850.github.io/rainbow/ (GitHub Pages, master 루트). 데모는 https://xodnjs9850.github.io/rainbow/demo.html#1
+
 - 소개 페이지: `index.html`
 - 시나리오 데모(7장면): `demo.html` — `demo.html#4`처럼 장면 번호로 바로 열 수 있습니다.
 
