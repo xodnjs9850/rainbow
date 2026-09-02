@@ -47,11 +47,11 @@ window.LB_DATA = (function () {
     },
     students: students,
     events: [
-      { id: "E1", type: "구역이탈", alias: "노랑이", tag: "LB-0917-11", zone: "야외광장", action: "인솔 복귀", response: "42초" },
+      { id: "E1", type: "구역이탈", alias: "노랑이", tag: "LB-0917-11", zone: "야외광장", action: "인솔 복귀", response: "42초(시연값)" },
       { id: "E2", type: "SOS", alias: "파랑이", tag: "LB-0917-03", action: "오입력" }
     ],
     actions: ["직접 확인함", "인솔 복귀", "오탐"],
-    summary: { duration: "2시간 10분", checkTime: "38초", alerts: 2, exits: 1, sos: 1, falsePos: 1, avgResponse: "42초" },
+    summary: { duration: "2시간 10분", checkTime: "38초(시연값)", alerts: 2, exits: 1, sos: 1, falsePos: 1, avgResponse: "42초(시연값)" },
     monthly: { classes: 1, sessions: 3, acceptance: "18/20", falseRate: "4%", falseLimit: "5%", satisfaction: "미측정" },
     report: { id: "RPT-0917-햇살반", version: "v1.0", source: "세션 #S-0917", retention: "원시 로그는 30일 후 자동 파기 · 익명 집계만 보관" }
   };

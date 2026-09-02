@@ -121,7 +121,7 @@ window.LB = (function () {
     }
     var k = e.key;
     if (k === "ArrowRight") next(); else if (k === "ArrowLeft") prev();
-    else if (/^[1-9]$/.test(k)) goTo(parseInt(k, 10));
+    else if (/^[1-7]$/.test(k)) goTo(parseInt(k, 10));
     else if (k === "n" || k === "N") toggleNotes();
     else if (k === "c" || k === "C") toggleCapture();
     else if (k === "r" || k === "R") resetCurrent();

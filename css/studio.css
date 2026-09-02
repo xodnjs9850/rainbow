@@ -10,6 +10,7 @@
 .btn.quit{background:#fff;color:var(--danger);border-color:#FCA5A5;font-size:16px;padding:10px 18px;border-radius:10px}
 .btn.quit:hover{background:var(--danger-bg)}
 body.mode-student .stage{background:var(--student-bg);font-size:18px}
+body.mode-student .stage .hint{font-size:16px}
 .studio{max-width:1100px;margin:0 auto}
 .studio.wide{max-width:1400px}
 .studio .head h2{font-size:30px}

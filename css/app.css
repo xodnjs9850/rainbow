@@ -41,6 +41,8 @@ body.mode-student .topbar-teacher{display:none}
 body.mode-teacher .topbar-student{display:none}
 body.mode-student #lb-app{grid-template-columns:0 1fr}
 body.mode-student .sidebar{display:none}
+body.mode-teacher .stage .tbl th,body.mode-teacher .stage .tbl td{padding:5px 10px}
+body.mode-teacher .stage > .line-item:last-child{position:sticky;bottom:0;z-index:1;box-shadow:0 -2px 6px rgba(0,0,0,.06)}
 /* 캡처 모드: 고지·하단 데모 바·메모 숨김, 본문이 아래까지 */
 body.capture #lb-app{grid-template-rows:0 56px 1fr 0 0}
 body.capture .notice,body.capture .demobar,body.capture .note{display:none}
@@ -53,7 +55,7 @@ body.capture .notice,body.capture .demobar,body.capture .note{display:none}
 .zone.ok{background:var(--ok-bg);color:var(--ok)}
 .zone.danger{background:var(--danger-bg);color:var(--danger)}
 .board{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-.tile{display:flex;flex-direction:column;gap:2px;padding:10px;border-radius:8px;text-align:center;border:1px solid var(--line);font-size:14px;background:#fff}
+.tile{display:flex;flex-direction:column;gap:2px;padding:10px;border-radius:8px;text-align:center;border:1px solid var(--line);font-size:15px;background:#fff}
 .tile.ok{background:var(--ok-bg);border-color:#86EFAC}
 .tile.warn{background:var(--warn-bg);border-color:#F59E0B}
 .tile.danger{background:var(--danger-bg);border-color:#FCA5A5;font-weight:700}
@@ -61,7 +63,7 @@ body.capture .notice,body.capture .demobar,body.capture .note{display:none}
 .alert-item.danger{border-color:#FCA5A5;background:var(--danger-bg)}
 .alert-item.ok{border-color:#86EFAC;background:var(--ok-bg)}
 .acts{display:flex;gap:6px;flex-wrap:wrap}
-.timeline{padding-left:18px;font-size:14px;line-height:1.8;margin:0}
+.timeline{padding-left:18px;font-size:15px;line-height:1.8;margin:0}
 .danger-t{color:var(--danger)}
 .paper{background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);padding:30px 36px;max-width:720px;font-size:15px}
 .paper h3{text-align:center;font-size:20px;margin-bottom:18px}

@@ -16,7 +16,7 @@
       + (step === 2 ? '<button id="s6-confirm" class="btn">확인</button>'
         : step === 3 ? '<div class="acts">' + data.actions.map(function (a) { return '<button class="btn ghost s6-act" data-act="' + esc(a) + '">' + esc(a) + '</button>'; }).join("") + '</div>'
         : '<span class="badge ok">' + esc(action) + ' · 대응 ' + esc(e1.response) + '</span>') + '</div>');
-    if (step >= 5) alerts.push('<div class="alert-item ' + (step >= 6 ? 'ok' : 'danger') + '" id="s6-a2"><div><b>' + esc(e2.type) + '</b> · ' + esc(e2.alias) + ' <span class="mono muted">' + esc(e2.tag) + '</span><br><span class="small">태그 버튼 입력</span></div>'
+    if (step >= 5) alerts.push('<div class="alert-item ' + (step >= 6 ? 'ok' : 'danger') + '" id="s6-a2"><div><b>' + esc(e2.type) + '</b> · ' + esc(e2.alias) + ' · ' + esc(data.hero.character) + ' <span class="mono muted">' + esc(e2.tag) + '</span><br><span class="small">태그 버튼 입력</span></div>'
       + (step === 5 ? '<button id="s6-confirm2" class="btn">확인</button>' : '<span class="badge ok">' + esc(e2.action) + ' 기록</span>') + '</div>');
     var tl = [];
     if (step >= 1) tl.push('00:00 ' + esc(e1.alias) + ' · ' + esc(e1.zone) + ' 우세 → <b>주의</b>');
