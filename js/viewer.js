@@ -134,7 +134,9 @@ window.LB_VIEWER = (function () {
       scene.traverse(function (o) {
         if (!o.isMesh) return;
         if (o.geometry) o.geometry.dispose();
-        (Array.isArray(o.material) ? o.material : (o.material ? [o.material] : [])).forEach(function (m) {
+        var mats = (Array.isArray(o.material) ? o.material : (o.material ? [o.material] : []));
+        if (o.userData.lbOrig) mats = mats.concat(Array.isArray(o.userData.lbOrig) ? o.userData.lbOrig : [o.userData.lbOrig]); // 삽입 중 dispose: 원본 재질도 해제
+        mats.forEach(function (m) {
           if (m.map) m.map.dispose();
           m.dispose();
         });

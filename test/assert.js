@@ -16,8 +16,8 @@ window.T = (function () {
       else { pass++; log("PASS " + name); }
       flush();
     }
-    try { fn(finish); } catch (e) { finish(e); }
     var timer = setTimeout(function () { finish(new Error("timeout 4s")); }, 4000);
+    try { fn(finish); } catch (e) { finish(e); }
   }
   function eq(a, b, msg) {
     if (a !== b) throw new Error((msg || "") + " expected " + JSON.stringify(b) + " got " + JSON.stringify(a));
