@@ -28,10 +28,10 @@
   <h2>지금의 문제</h2>
   <p class="muted">안전 필요는 크지만, 기기를 주는 것과 실제로 소지하는 것은 다릅니다.</p>
   <div class="grid4">
-    <div class="card"><h4>실종·이탈 위험은 반복된다</h4><p>특수교육대상 학생 124,195명, 특수학급 15,426학급. 체험활동에서 교사가 짧은 시간에 여러 학생을 확인할 보조도구가 필요 → <b>세션 기반 구역 확인·기록</b></p><span class="src">출처: e-나라지표 특수교육 규모(2026). 도입효과를 입증하는 수치가 아닌 배경자료입니다.</span></div>
-    <div class="card"><h4>지급과 소지는 다르다</h4><p>감각 불편·낙인·기기 노출로 실제 소지 유지가 낮아질 수 있음 → <b>학생이 선택하고 직접 만드는 개인화 쉘</b></p><span class="src">국내 직접 통계는 없어 STEP2 실증에서 일반 케이스와 비교 측정합니다.</span></div>
-    <div class="card"><h4>생성형 3D는 공차를 보장하지 않는다</h4><p>외형은 빠르게 나오지만 삽입공간·버튼·안테나 간섭·벽두께는 보장 못함 → <b>파라메트릭 BLE Core Insert + 자동 검수</b></p></div>
-    <div class="card"><h4>AI가 개발 보조에 머문다</h4><p>코드 작성 보조는 누구나 복제 가능, 고객이 체감하는 AI 가치가 불명확 → <b>학생 창작·제조 데이터·교사 요약에 AI를 직접 연결</b></p></div>
+    <div class="card"><h3>실종·이탈 위험은 반복된다</h3><p>특수교육대상 학생 124,195명, 특수학급 15,426학급. 체험활동에서 교사가 짧은 시간에 여러 학생을 확인할 보조도구가 필요 → <b>세션 기반 구역 확인·기록</b></p><span class="src">출처: e-나라지표 특수교육 규모(2026). 도입효과를 입증하는 수치가 아닌 배경자료입니다.</span></div>
+    <div class="card"><h3>지급과 소지는 다르다</h3><p>감각 불편·낙인·기기 노출로 실제 소지 유지가 낮아질 수 있음 → <b>학생이 선택하고 직접 만드는 개인화 쉘</b></p><span class="src">국내 직접 통계는 없어 STEP2 실증에서 일반 케이스와 비교 측정합니다.</span></div>
+    <div class="card"><h3>생성형 3D는 공차를 보장하지 않는다</h3><p>외형은 빠르게 나오지만 삽입공간·버튼·안테나 간섭·벽두께는 보장 못함 → <b>파라메트릭 BLE Core Insert + 자동 검수</b></p></div>
+    <div class="card"><h3>AI가 개발 보조에 머문다</h3><p>코드 작성 보조는 누구나 복제 가능, 고객이 체감하는 AI 가치가 불명확 → <b>학생 창작·제조 데이터·교사 요약에 AI를 직접 연결</b></p></div>
   </div>
 </section>
 
@@ -78,13 +78,13 @@
 <section id="arch" class="block">
   <h2>구성과 안전 원칙</h2>
   <div class="arch">
-    <div class="arch-col"><h4>안전운영</h4>
+    <div class="arch-col"><h3>안전운영</h3>
       <div class="node">태그<br><span class="small muted">rolling ID · 버튼 · 배터리 (개인정보 없음)</span></div><div class="arrow">↓</div>
       <div class="node">게이트웨이<br><span class="small muted">구역 · RSSI · 오프라인 버퍼</span></div><div class="arrow">↓</div>
       <div class="node rule">이벤트 엔진<br><span class="small muted">미확인 · 구역이탈 · SOS · hysteresis</span></div><div class="arrow">↓</div>
       <div class="node strong">King Check<br><span class="small muted">교사 확인 · 조치 · 기록 · 집계</span></div>
     </div>
-    <div class="arch-col"><h4>제작 파이프라인</h4>
+    <div class="arch-col"><h3>제작 파이프라인</h3>
       <div class="node">그림 · 카드<br><span class="small muted">사진·이름·연락처 없음</span></div><div class="arrow">↓</div>
       <div class="node ai">AI 이미지 → Tripo V3<br><span class="small muted">오리지널 캐릭터 외형</span></div><div class="arrow">↓</div>
       <div class="node rule">BLE Insert 결합 → 자동 검수<br><span class="small muted">규칙 엔진 · 공차 · keep-out</span></div><div class="arrow">↓</div>
@@ -108,9 +108,11 @@
 <script>
 (function () {
   var el = document.getElementById("flow-steps");
+  if (!el || !window.LB_FLOW) return;
+  // demo.js를 로드하지 않는 페이지라 LB.esc 대신 최소 escape를 둔다.
   function esc(v) { return String(v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
   el.innerHTML = LB_FLOW.map(function (s) {
-    return '<div class="f' + (s.ai ? ' ai' : '') + (s.rule ? ' rule' : '') + '" title="' + esc(s.desc) + '"><div class="n">' + s.no + '</div><div class="t">' + esc(s.name) + '</div>'
+    return '<div class="f' + (s.ai ? ' ai' : '') + (s.rule ? ' rule' : '') + '"><div class="n">' + s.no + '</div><div class="t">' + esc(s.name) + '</div>'
       + (s.rule ? '<span class="r">규칙 엔진</span>' : '') + '<div class="d">' + esc(s.desc) + '</div></div>';
   }).join("");
 })();

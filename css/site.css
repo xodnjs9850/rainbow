@@ -18,7 +18,7 @@ body.site{background:#fff}
 .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 .grid6{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
 .grid4 .card,.grid6 .card{margin:0}
-.grid4 h4{color:var(--accent)}.grid4 p{margin:0;font-size:15px}
+.grid4 h3{color:var(--accent);font-size:18px}.grid4 p{margin:0;font-size:15px}
 .grid4 .src{display:block;margin-top:8px;font-size:12px;color:var(--muted)}
 .flow9{display:grid;grid-template-columns:repeat(9,1fr);gap:10px;margin-top:18px}
 .flow9 .f{position:relative;padding:14px 10px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;min-height:110px}
@@ -36,7 +36,7 @@ body.site{background:#fff}
 .card.num div:last-child{font-size:14px;color:#374151}
 .arch{display:grid;grid-template-columns:1fr 1fr;gap:40px;max-width:1080px;margin-top:18px}
 .arch-col{display:flex;flex-direction:column;gap:8px;align-items:stretch}
-.arch-col h4{text-align:center;color:var(--muted)}
+.arch-col h3{text-align:center;color:var(--muted);font-size:17px}
 .arch .node{padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:#fff;text-align:center;font-size:15px}
 .arch .node.strong{border-color:var(--accent);background:var(--info-bg);font-weight:700}
 .arch .node.ai{border-color:var(--accent-2);background:var(--ai-bg)}

@@ -24,5 +24,19 @@ T.test("s2: 카드 3종 선택 → AI 그림 만들기 → 3안 + 필터 로그 
   root.querySelector("#s2-ok").click();
   T.has(root.querySelector("#s2-done"), "뭉치 선택 완료");
   T.ok(root.querySelector('.char[data-i="0"]').disabled, "완료 후엔 안 선택 버튼 비활성");
+  T.ok(root.querySelector("#s2-name").disabled, "완료 후 이름 입력 비활성");
   root.querySelector('.tab[data-tab="text"]').click(); T.has(root, "시연 범위 밖");
+});
+
+T.test("s2: 공백만 입력한 이름은 기본값으로 돌아간다", function () {
+  restoreScenes(); var s = sceneById(2);
+  var root = T.stage(""); s.reset(); s.render(root, LB_DATA);
+  root.querySelector('.opt[data-group="animal"][data-id="cat"]').click();
+  root.querySelector('.opt[data-group="color"][data-id="yellow"]').click();
+  root.querySelector('.opt[data-group="face"][data-id="brave"]').click();
+  root.querySelector("#s2-gen").click();
+  root.querySelector('.char[data-i="2"]').click();
+  var ni = root.querySelector("#s2-name"); ni.value = "   "; ni.dispatchEvent(new Event("input"));
+  root.querySelector("#s2-ok").click();
+  T.has(root.querySelector("#s2-done"), "토토 선택 완료", "공백 이름은 기본값으로");
 });

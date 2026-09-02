@@ -154,7 +154,7 @@ js/scenes/s4-inspect.js   검수와 출력 승인
 js/scenes/s5-session.js   세션 시작
 js/scenes/s6-events.js    이벤트와 대응
 js/scenes/s7-report.js    세션 종료와 보고
-js/flow.js                해시 읽기·첫 장면 진입(qtrace-demo와 동일)
+js/flow.js                9단계 파이프라인 데이터 (window.LB_FLOW, 소개 페이지 §3에서 사용)
 test/test.html            브라우저 테스트 러너(qtrace-demo 하네스 이식)
 test/assert.js
 test/tests/               t0 하네스 · t1 데이터 · t2 엔진(mode 전환 포함) · t3 장면 7개 · t4 소개 페이지
