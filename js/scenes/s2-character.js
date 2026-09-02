@@ -1,6 +1,6 @@
 (function () {
-  var esc = LB.esc, root, data, tab, sel, loading, results, chosen, named, name, failed;
-  function init() { tab = "cards"; sel = { animal: null, color: null, face: null }; loading = false; results = null; chosen = null; named = false; name = null; failed = [false, false, false]; }
+  var esc = LB.esc, root, data, sel, loading, results, chosen, named, name, failed;
+  function init() { sel = { animal: null, color: null, face: null }; loading = false; results = null; chosen = null; named = false; name = null; failed = [false, false, false]; }
   function colorHex(id) { var h = "#3B82F6"; data.cards.colors.forEach(function (c) { if (c.id === id) h = c.hex; }); return h; }
   function ready() { return !!(sel.animal && sel.color && sel.face); }
   function group(title, key, items) {
@@ -23,16 +23,11 @@
           + (named ? '<span id="s2-done" class="badge ok big">' + esc(name) + ' 선택 완료</span>' : '') + '</div>' : '');
     else right = '<div class="gen-empty"><p>카드를 고르고 만들기를 눌러요</p></div>';
     root.innerHTML = '<div class="studio wide"><div class="head"><h2>그림에서 캐릭터로</h2><span class="badge gray">AI 이미지 · 오리지널 캐릭터만</span></div>'
-      + '<div class="row"><div class="card"><div class="tabs">'
-      + ["cards:카드 고르기", "text:글쓰기", "draw:그림"].map(function (t) { var p = t.split(":"); return '<button class="tab' + (tab === p[0] ? ' on' : '') + '" data-tab="' + p[0] + '">' + p[1] + '</button>'; }).join("")
-      + '</div>'
-      + (tab === "cards"
-          ? group("동물", "animal", data.cards.animals) + group("색", "color", data.cards.colors) + group("표정", "face", data.cards.faces)
-          : '<p class="hint" style="padding:24px 0">' + (tab === "text" ? "글로 설명하는 방식은 시연 범위 밖입니다." : "직접 그리는 방식은 시연 범위 밖입니다.") + ' 카드 고르기로 진행해요.</p>')
+      + '<div class="row"><div class="card"><h3>카드 고르기</h3>'
+      + group("동물", "animal", data.cards.animals) + group("색", "color", data.cards.colors) + group("표정", "face", data.cards.faces)
       + '<button id="s2-gen" class="btn big"' + (ready() && !loading && !results ? '' : ' disabled') + '>AI 그림 만들기</button>'
       + '<p class="hint">학생 사진·이름·연락처는 입력하지 않아요. 저작권 캐릭터 이름은 걸러져요.</p></div>'
       + '<div class="card gen">' + right + '</div></div></div>';
-    root.querySelectorAll(".tab").forEach(function (b) { b.onclick = function () { tab = b.getAttribute("data-tab"); paint(); }; });
     root.querySelectorAll(".opt").forEach(function (b) { b.onclick = function () { if (results) return; sel[b.getAttribute("data-group")] = b.getAttribute("data-id"); paint(); }; });
     root.querySelector("#s2-gen").onclick = function () {
       if (!ready() || loading || results) return; loading = true; paint();

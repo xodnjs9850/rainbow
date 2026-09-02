@@ -20,9 +20,9 @@ window.LB_DATA = (function () {
       promises: ["선생님이 부르면 대답해요", "정해진 곳에서 놀아요", "불편하면 말해요"]
     },
     cards: {
-      animals: [{ id: "rabbit", name: "토끼" }, { id: "cat", name: "고양이" }, { id: "dino", name: "공룡" }],
-      colors: [{ id: "blue", name: "파랑", hex: "#3B82F6" }, { id: "yellow", name: "노랑", hex: "#F59E0B" }, { id: "green", name: "초록", hex: "#22C55E" }],
-      faces: [{ id: "smile", name: "웃음" }, { id: "brave", name: "씩씩" }]
+      animals: [{ id: "rabbit", name: "토끼" }],
+      colors: [{ id: "blue", name: "파랑", hex: "#3B82F6" }],
+      faces: [{ id: "smile", name: "웃음" }]
     },
     filterLog: ["저작권 캐릭터 이름 검사 통과", "학생 사진 없음", "메타데이터 제거"],
     tripo: { task: "task_demo_7f3a", stages: ["queued", "running", "success"], genTime: "48초(시연값)" },

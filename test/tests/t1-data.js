@@ -5,7 +5,7 @@ T.test("data: 학생 20명·주인공 태그·구역·검수·이벤트가 한 �
   T.eq(d.students[10].alias, "노랑이"); T.eq(d.students[10].tag, "LB-0917-11");
   T.eq(d.hero.tag, "LB-0917-03"); T.eq(d.hero.character, "토토");
   T.eq(d.consent.carry.length, 3); T.eq(d.consent.promises.length, 3);
-  T.eq(d.cards.animals.length, 3); T.eq(d.cards.colors.length, 3); T.eq(d.cards.faces.length, 2);
+  T.eq(d.cards.animals.length, 1); T.eq(d.cards.colors.length, 1); T.eq(d.cards.faces.length, 1);
   T.eq(d.tripo.stages.join(","), "queued,running,success");
   T.eq(d.checks.length, 8); T.eq(d.checks.filter(function (c) { return c.warn; }).length, 1);
   T.eq(d.session.zones.length, 4); T.eq(d.session.zones.filter(function (z) { return !z.allowed; }).length, 1);
