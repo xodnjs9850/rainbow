@@ -3,6 +3,7 @@
 // - data는 장면 진입마다 원본에서 다시 복제되므로 바꿔도 남지 않는다.
 // - 리스너는 render가 받은 root 안에서만 건다.
 // - 지연 실행은 LB.later(fn, ms)로만 한다. 장면 전환 시 엔진이 전부 해제한다. 테스트는 LB.sync=true로 즉시 실행.
+//   sync 모드에서는 ms를 무시하고 호출 순서대로 즉시 실행하므로, 장면은 타이머를 겹치지 않고 순서대로만 건다.
 window.LB = (function () {
   var scenes = [], current = 0, els = null, BASE = null, timers = [];
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
@@ -85,7 +86,8 @@ window.LB = (function () {
   function showQuit() { if (els && els.quitCard) els.quitCard.hidden = false; }
   function hideQuit() { if (els && els.quitCard) els.quitCard.hidden = true; }
   function goTo(n) {
-    var s = find(n); if (!s || !els) return;
+    var s = find(n); if (!els) return;
+    if (!s) { if (find(current) && location.hash !== "#" + current) history.replaceState(null, "", "#" + current); return; }
     current = n; clearTimers(); badge(0); crumb(""); hideQuit();
     // 장면마다 데이터를 원본에서 다시 복제한다. 리허설을 몇 번 돌려도 결과가 같아야 한다.
     if (BASE) window.LB_DATA = clone(BASE);
@@ -110,7 +112,11 @@ window.LB = (function () {
   function onKey(e) {
     var tag = (e.target && e.target.tagName) || ""; if (/INPUT|TEXTAREA|SELECT/.test(tag)) return;
     if (e.target && e.target.isContentEditable) return;
-    if (e.isComposing || e.keyCode === 229) return;   // 한글 조합 중
+    if (e.isComposing || e.keyCode === 229) {          // 한글 IME 상태: 물리 키(e.code)로 N/C/R만 처리
+      var c = e.code;
+      if (c === "KeyN") toggleNotes(); else if (c === "KeyC") toggleCapture(); else if (c === "KeyR") resetCurrent(); else return;
+      e.preventDefault(); return;
+    }
     if (e.repeat) return;
     if (e.altKey || e.ctrlKey || e.metaKey) return;
     var k = e.key;
@@ -127,7 +133,7 @@ window.LB = (function () {
     grab(); buildSidebar(); buildDots(); buildSteps();
     els.prev.onclick = prev; els.next.onclick = next;
     els.quit.onclick = showQuit; els.quitBack.onclick = hideQuit;
-    if (window.LB_DATA) BASE = clone(window.LB_DATA);
+    if (!BASE && window.LB_DATA) BASE = clone(window.LB_DATA);
     if (!bound) {
       document.addEventListener("keydown", onKey);
       window.addEventListener("hashchange", function () {
@@ -140,7 +146,8 @@ window.LB = (function () {
   }
   var api = { registerScene: registerScene, scenes: scenes, MENU: MENU, STEPS: STEPS, init: init, goTo: goTo, next: next, prev: prev,
     toggleNotes: toggleNotes, toggleCapture: toggleCapture, resetCurrent: resetCurrent, badge: badge, crumb: crumb,
-    esc: esc, later: later, clearTimers: clearTimers, showQuit: showQuit, hideQuit: hideQuit, sync: false };
+    esc: esc, later: later, clearTimers: clearTimers, pending: function () { return timers.length; },
+    showQuit: showQuit, hideQuit: hideQuit, sync: false };
   Object.defineProperty(api, "current", { get: function () { return current; } });
   document.addEventListener("DOMContentLoaded", function () { if ($("lb-app") && !els) init(); });
   return api;

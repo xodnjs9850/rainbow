@@ -13,15 +13,19 @@
       reset: function () { calls.push("reset" + id); } };
   }
   function key(k) { document.dispatchEvent(new KeyboardEvent("keydown", { key: k, bubbles: true })); }
+  function mount(list) {
+    document.getElementById("stage").innerHTML = ""; T.stage(SHELL);
+    LB.scenes.length = 0; list.forEach(function (s) { LB.registerScene(s); });
+    history.replaceState(null, "", "#1"); LB.init();
+  }
   T.test("engine: registerScene는 id 순으로 정렬", function () {
     var calls = []; LB.scenes.length = 0;
     LB.registerScene(stub(2, "student", null, calls)); LB.registerScene(stub(1, "student", null, calls));
     T.eq(LB.scenes.map(function (s) { return s.id; }).join(","), "1,2");
   });
   T.test("engine: goTo는 reset→render 순서로 부르고 바·해시·점을 갱신", function () {
-    var calls = []; LB.scenes.length = 0; T.stage(SHELL); history.replaceState(null, "", "#1");
-    LB.registerScene(stub(1, "student", null, calls)); LB.registerScene(stub(2, "teacher", "alerts", calls));
-    LB.init();
+    var calls = [];
+    mount([stub(1, "student", null, calls), stub(2, "teacher", "alerts", calls)]);
     T.eq(calls.join(","), "reset1,render1"); T.eq(LB.current, 1);
     LB.goTo(2);
     T.eq(calls.slice(2).join(","), "reset2,render2");
@@ -31,13 +35,19 @@
     T.eq(location.hash, "#2");
     T.eq(document.querySelectorAll("#lb-dots .dot.active").length, 1);
     LB.goTo(9); T.eq(LB.current, 2, "범위 밖 무시");
+    T.eq(location.hash, "#2", "잘못된 해시는 현재 장면으로 복원");
   });
   T.test("engine: mode에 따라 body 클래스가 바뀐다", function () {
+    var calls = [];
+    mount([stub(1, "student", null, calls), stub(2, "teacher", "alerts", calls)]);
+    LB.goTo(2);
     T.ok(document.body.classList.contains("mode-teacher")); T.ok(!document.body.classList.contains("mode-student"));
     LB.goTo(1);
     T.ok(document.body.classList.contains("mode-student")); T.ok(!document.body.classList.contains("mode-teacher"));
   });
   T.test("engine: 사이드바는 MENU 6개, 교사 장면 key와 같은 항목만 active", function () {
+    var calls = [];
+    mount([stub(1, "student", null, calls), stub(2, "teacher", "alerts", calls)]);
     LB.goTo(2);
     var items = document.querySelectorAll("#lb-sidebar .menu-item");
     T.eq(items.length, 6);
@@ -46,9 +56,10 @@
     LB.goTo(1); T.eq(document.querySelectorAll("#lb-sidebar .menu-item.active").length, 0, "학생 장면은 활성 없음");
   });
   T.test("engine: 학생 진행 표시 4단계, 현재 active·이전 done", function () {
-    var calls = []; LB.scenes.length = 0; T.stage(SHELL); history.replaceState(null, "", "#1");
-    [1, 2, 3, 4].forEach(function (i) { LB.registerScene(stub(i, "student", null, calls)); });
-    LB.registerScene(stub(5, "teacher", "session", calls)); LB.init();
+    var calls = [];
+    var list = [1, 2, 3, 4].map(function (i) { return stub(i, "student", null, calls); });
+    list.push(stub(5, "teacher", "session", calls));
+    mount(list);
     var st = document.querySelectorAll("#lb-steps .st"); T.eq(st.length, 4);
     LB.goTo(3);
     st = document.querySelectorAll("#lb-steps .st");
@@ -57,8 +68,8 @@
     LB.goTo(5); T.eq(document.querySelectorAll("#lb-steps .st.active").length, 0, "교사 장면에서는 진행 표시 비활성");
   });
   T.test("engine: 그만하기 카드 열기·닫기, 장면 이동 시 닫힘, 장면 상태는 유지", function () {
-    var calls = []; LB.scenes.length = 0; T.stage(SHELL); history.replaceState(null, "", "#1");
-    LB.registerScene(stub(1, "student", null, calls)); LB.registerScene(stub(2, "student", null, calls)); LB.init();
+    var calls = [];
+    mount([stub(1, "student", null, calls), stub(2, "student", null, calls)]);
     var card = document.getElementById("lb-quit-card");
     calls.length = 0;
     document.getElementById("lb-quit").click(); T.ok(!card.hidden, "열림"); T.eq(calls.length, 0, "장면 재렌더 없음");
@@ -66,14 +77,19 @@
     LB.showQuit(); LB.goTo(2); T.ok(card.hidden, "이동 시 닫힘");
   });
   T.test("engine: later는 sync면 즉시, 아니면 지연, goTo가 대기 타이머를 모두 해제", function () {
+    var calls = [];
+    mount([stub(1, "student", null, calls)]);
     var hit = 0; LB.sync = true; LB.later(function () { hit++; }, 1000); T.eq(hit, 1);
-    LB.sync = false; LB.later(function () { hit++; }, 5000); T.eq(hit, 1, "지연 중");
-    LB.goTo(1); LB.clearTimers(); LB.sync = true;
-    T.eq(hit, 1, "해제된 타이머는 실행되지 않는다(5초 뒤에도)");
+    LB.sync = false; LB.later(function () { hit++; }, 5000); T.eq(hit, 1, "지연 중"); T.eq(LB.pending(), 1);
+    var cleared = []; var orig = window.clearTimeout;
+    window.clearTimeout = function (t) { cleared.push(t); return orig.call(window, t); };
+    try { LB.goTo(1); } finally { window.clearTimeout = orig; }
+    T.eq(LB.pending(), 0, "goTo가 대기 타이머를 비운다"); T.eq(cleared.length, 1, "clearTimeout 호출");
+    LB.sync = true;
   });
   T.test("engine: 키보드 →/←/숫자/N/C/R, 입력 필드에서는 무시", function () {
-    var calls = []; LB.scenes.length = 0; T.stage(SHELL); history.replaceState(null, "", "#1");
-    LB.registerScene(stub(1, "student", null, calls)); LB.registerScene(stub(2, "student", null, calls)); LB.init();
+    var calls = [];
+    mount([stub(1, "student", null, calls), stub(2, "student", null, calls)]);
     key("ArrowRight"); T.eq(LB.current, 2);
     key("ArrowLeft"); T.eq(LB.current, 1);
     key("2"); T.eq(LB.current, 2);
@@ -84,7 +100,20 @@
     inp.dispatchEvent(new KeyboardEvent("keydown", { key: "1", bubbles: true }));
     T.eq(LB.current, 2, "입력 필드에서는 숫자 키를 먹지 않는다");
   });
+  T.test("engine: 한글 IME 조합 중에도 N/C/R은 물리 키로 동작", function () {
+    var calls = [];
+    mount([stub(1, "student", null, calls), stub(2, "student", null, calls)]);
+    function imeKey(code) {
+      var ev = new KeyboardEvent("keydown", { key: "Process", code: code, bubbles: true });
+      Object.defineProperty(ev, "keyCode", { get: function () { return 229; } });
+      document.dispatchEvent(ev);
+    }
+    imeKey("KeyN"); T.ok(document.body.classList.contains("notes-on"), "IME 중 N으로 메모 켜짐");
+    imeKey("KeyN"); T.ok(!document.body.classList.contains("notes-on"), "IME 중 N으로 메모 꺼짐");
+  });
   T.test("engine: badge/crumb/esc", function () {
+    var calls = [];
+    mount([stub(1, "student", null, calls)]);
     LB.badge(2); T.eq(document.getElementById("lb-badge").textContent, "2");
     T.ok(!document.getElementById("lb-badge").hidden);
     LB.badge(0); T.ok(document.getElementById("lb-badge").hidden);
@@ -92,16 +121,16 @@
     T.eq(LB.esc('<a href="x">&\''), "&lt;a href=&quot;x&quot;&gt;&amp;&#39;");
   });
   T.test("engine: prev/next는 양 끝에서 disabled, 데이터는 진입마다 원본으로 복원", function () {
-    var calls = []; LB.scenes.length = 0; T.stage(SHELL); history.replaceState(null, "", "#1");
-    LB.registerScene(stub(1, "student", null, calls)); LB.registerScene(stub(2, "student", null, calls)); LB.init();
+    var calls = [];
+    mount([stub(1, "student", null, calls), stub(2, "student", null, calls)]);
     T.ok(document.getElementById("lb-prev").disabled); T.ok(!document.getElementById("lb-next").disabled);
     LB.goTo(2); T.ok(!document.getElementById("lb-prev").disabled); T.ok(document.getElementById("lb-next").disabled);
     window.LB_DATA.hero.character = "변조"; LB.goTo(1); T.eq(window.LB_DATA.hero.character, "토토");
   });
   T.test("engine: render가 던져도 다음 장면으로 넘어갈 수 있다", function () {
-    var calls = []; LB.scenes.length = 0; T.stage(SHELL); history.replaceState(null, "", "#1");
+    var calls = [];
     var bad = stub(1, "student", null, calls); bad.render = function () { throw new Error("boom"); };
-    LB.registerScene(bad); LB.registerScene(stub(2, "student", null, calls)); LB.init();
+    mount([bad, stub(2, "student", null, calls)]);
     T.has(document.getElementById("lb-stage"), "렌더 실패"); LB.next(); T.eq(LB.current, 2);
   });
 })();
