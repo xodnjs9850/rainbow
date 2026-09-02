@@ -7,12 +7,16 @@
 <!-- scripts -->
 <script src="../js/data.js"></script>
 <script src="../js/art.js"></script>
+<script src="../js/demo.js"></script>
 <!-- /scripts -->
 <script src="assert.js"></script>
 <!-- tests -->
+<!-- 순서 규칙: 장면 파일은 scripts 블록에서 demo.js 뒤에 로드. t3-scenes-util.js는 t2-engine.js(scenes를 비움)보다 앞에. 장면 테스트(t3-sN.js)는 t2-engine.js 뒤에 두고 첫 줄에서 restoreScenes()를 부른다. -->
 <script src="tests/t0-harness.js"></script>
 <script src="tests/t1-data.js"></script>
 <script src="tests/t1-art.js"></script>
+<script src="tests/t3-scenes-util.js"></script>
+<script src="tests/t2-engine.js"></script>
 <!-- /tests -->
 <script>T.done();</script>
 </body></html>
