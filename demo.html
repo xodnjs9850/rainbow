@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LIX Buddy · 시나리오 데모</title>
+<link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/app.css"><link rel="stylesheet" href="css/studio.css">
+</head><body class="mode-student">
+<div id="lb-app">
+  <div id="lb-notice" class="notice">시연용 가상 데이터 · 실제 학생·학교·AI 출력이 아닙니다</div>
+  <header class="topbar topbar-student">
+    <a class="logo" href="index.html" title="소개 페이지로">LIX <b>Buddy</b> 만들기</a>
+    <span class="badge info" title="학생은 이름 대신 별칭만 씁니다">파랑이</span>
+    <span class="spacer"></span>
+    <div id="lb-steps" class="steps4"></div>
+    <span class="spacer"></span>
+    <button id="lb-quit" class="btn quit" title="언제든 그만할 수 있어요">그만하기</button>
+  </header>
+  <header class="topbar topbar-teacher">
+    <a class="logo" href="index.html" title="소개 페이지로">King <b>Check</b></a>
+    <span id="lb-crumb" class="crumb"></span>
+    <span class="spacer"></span>
+    <span class="badge info">햇살특수학교(가상)</span>
+    <span class="bell" title="알림">
+      <svg viewBox="0 0 20 20"><path d="M10 2a5 5 0 0 0-5 5v3l-2 3h14l-2-3V7a5 5 0 0 0-5-5zM8 16a2 2 0 0 0 4 0"/></svg>
+      <span id="lb-badge" class="bell-badge" hidden></span>
+    </span>
+    <span class="user"><span class="avatar">교</span>담당교사</span>
+  </header>
+  <nav id="lb-sidebar" class="sidebar"></nav>
+  <main id="lb-stage" class="stage"></main>
+  <aside id="lb-note" class="note"></aside>
+  <footer id="lb-bar" class="demobar">
+    <span id="lb-pos" class="pos"></span>
+    <span class="titlewrap"><b id="lb-title"></b><span id="lb-summary" class="muted"></span></span>
+    <span class="spacer"></span>
+    <div id="lb-dots" class="dots"></div>
+    <button id="lb-prev" class="btn ghost">◀ 이전</button>
+    <button id="lb-next" class="btn">다음 ▶</button>
+    <span class="keys muted small">←/→ 이동 · 1~7 장면 · N 메모 · C 캡처 · R 초기화</span>
+  </footer>
+  <div id="lb-quit-card" class="quit-card" hidden>
+    <div class="card"><h3>괜찮아요</h3><p>오늘은 기본 쉘로 함께해요.<br>언제든 다시 만들 수 있어요.</p><button id="lb-quit-back" class="btn big">돌아가기</button></div>
+  </div>
+</div>
+<script src="js/data.js"></script>
+<script src="js/art.js"></script>
+<script src="js/demo.js"></script>
+<script src="js/scenes/s1-consent.js"></script>
+<script src="js/scenes/s2-character.js"></script>
+<script src="js/scenes/s3-model.js"></script>
+<script src="js/scenes/s4-inspect.js"></script>
+<script src="js/scenes/s5-session.js"></script>
+<script src="js/scenes/s6-events.js"></script>
+<script src="js/scenes/s7-report.js"></script>
+</body></html>
