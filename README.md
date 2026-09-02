@@ -42,6 +42,8 @@
 | `char-1.png` `char-2.png` `char-3.png` | 오리지널 캐릭터 AI 이미지 3안 |
 | `toto.glb` | `char-1.png`를 Tripo에 넣어 받은 3D 모델 |
 
+`toto.glb`를 넣은 뒤 이 폴더에서 `node tools/pack-assets.js` 를 한 번 실행하세요(`assets/toto.glb.js` 생성). 더블클릭(file://) 실행에서는 브라우저가 로컬 파일 fetch를 막기 때문에 이 단계가 필요합니다. GitHub Pages처럼 http로 열면 `assets/toto.glb`를 직접 읽습니다.
+
 3D 미리보기는 레포 안 `vendor/three.bundle.js`(Three.js)로 동작하며 외부 요청이 없습니다. 마우스로 드래그해 돌려볼 수 있고, 올려두면 회전이 멈춥니다.
 
 ## 오프라인으로 열기
@@ -53,7 +55,7 @@
 `test/test.html`을 브라우저로 열면 결과가 표시됩니다. 헤드리스로는:
 
 ```
-"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --headless=new --disable-gpu --dump-dom "file:///<이 폴더>/test/test.html" | findstr /R "PASS FAIL passed"
+"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --headless=new --disable-gpu --virtual-time-budget=8000 --dump-dom "file:///<이 폴더>/test/test.html" | findstr /R "PASS FAIL passed"
 ```
 
 ## 하지 않는 것

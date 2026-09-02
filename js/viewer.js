@@ -1,5 +1,5 @@
 // Three.js 3D 뷰어. GLB를 띄우고, 없으면 절차적 캐릭터로 대체한다. WebGL이 없으면 mount가 null을 돌려준다.
-// 외부 요청 없음: vendor/three.bundle.js와 assets/의 로컬 파일만 쓴다.
+// GLB는 file://에서 fetch가 막히므로 opts.glbData(base64, assets/toto.glb.js가 제공)로 파싱한다. http로 열릴 때만 opts.glb URL을 fetch한다.
 window.LB_VIEWER = (function () {
   var T = window.THREE, lastHandle = null;
   var COLORS = { blue: 0x3B82F6, yellow: 0xF59E0B, green: 0x22C55E };
@@ -7,6 +7,7 @@ window.LB_VIEWER = (function () {
     if (!T) return false;
     try { var c = document.createElement("canvas"); return !!(c.getContext("webgl2") || c.getContext("webgl")); } catch (e) { return false; }
   }
+  function b64ToBuf(b64) { var bin = atob(b64), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u.buffer; }
   function toon(hex) { return new T.MeshToonMaterial({ color: hex }); }
   // 절차적 캐릭터: 머리·몸통·눈·팔 + 동물별 특징. 높이 약 3.2, 바닥 y≈-1.2.
   function procedural(animal, hex) {
@@ -49,7 +50,7 @@ window.LB_VIEWER = (function () {
     var s = 2.6 / Math.max(size.y, 1e-6); obj.scale.setScalar(s);
     obj.position.set(-c.x * s, -b.min.y * s - 1.2, -c.z * s);
   }
-  // opts: { glb?, animal?, color?("blue"|"yellow"|"green" 또는 0xRRGGBB), onReady?(kind) }
+  // opts: { glb?, glbData?(base64), animal?, color?("blue"|"yellow"|"green" 또는 0xRRGGBB), onReady?(kind) }
   function mount(el, opts) {
     opts = opts || {};
     if (!supported() || !el) return null;
@@ -66,10 +67,12 @@ window.LB_VIEWER = (function () {
     var originals = [];
     function ready(k) { kind = k; if (opts.onReady) opts.onReady(k); }
     function useProcedural() { model = procedural(opts.animal || "rabbit", hex); scene.add(model); ready("procedural"); if (inserted) applyInsert(true); }
-    if (opts.glb) {
-      new T.GLTFLoader().load(opts.glb, function (gltf) {
-        model = gltf.scene; fit(model); scene.add(model); ready("glb"); if (inserted) applyInsert(true);
-      }, undefined, function () { useProcedural(); });
+    function onGltf(gltf) { model = gltf.scene; fit(model); scene.add(model); ready("glb"); if (inserted) applyInsert(true); }
+    if (opts.glbData) {
+      try { new T.GLTFLoader().parse(b64ToBuf(opts.glbData), "", onGltf, function () { setTimeout(useProcedural, 0); }); }
+      catch (e) { setTimeout(useProcedural, 0); }
+    } else if (opts.glb && location.protocol !== "file:") {
+      new T.GLTFLoader().load(opts.glb, onGltf, undefined, function () { useProcedural(); });
     } else useProcedural();
     function applyInsert(on) {
       if (!model) return;

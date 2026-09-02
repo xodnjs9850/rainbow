@@ -15,7 +15,7 @@
 **테스트 실행 명령(모든 태스크 공통):**
 
 ```bash
-"/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe" --headless=new --disable-gpu --dump-dom "file:///C:/Users/xodnj/Desktop/project/rainbow/test/test.html" 2>/dev/null | grep -E "PASS|FAIL|passed"
+"/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe" --headless=new --disable-gpu --virtual-time-budget=8000 --dump-dom "file:///C:/Users/xodnj/Desktop/project/rainbow/test/test.html" 2>/dev/null | grep -E "PASS|FAIL|passed"
 ```
 
 마지막 줄이 `N passed, 0 failed`여야 한다. FAIL 줄이 있으면 그 이름과 메시지가 함께 나온다.

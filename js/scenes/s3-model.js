@@ -35,7 +35,7 @@
       + '<p class="hint">치수·공차·안테나 공간은 AI가 아니라 규칙 기반 엔진이 넣어요.</p></div></div></div>';
     var view = root.querySelector("#s3-view");
     if (window.LB_VIEWER && LB_VIEWER.supported()) {
-      viewer = LB_VIEWER.mount(view, { glb: "assets/toto.glb", animal: h.animal, color: h.color });
+      viewer = LB_VIEWER.mount(view, { glb: "assets/toto.glb", glbData: (window.LB_ASSETS && LB_ASSETS.glb) || null, animal: h.animal, color: h.color });
     }
     if (!viewer) { // WebGL 불가: SVG 대체
       var hex = "#3B82F6"; data.cards.colors.forEach(function (x) { if (x.id === h.color) hex = x.hex; });

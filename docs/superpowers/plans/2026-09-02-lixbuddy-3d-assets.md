@@ -13,7 +13,7 @@
 **작업 폴더:** `C:\Users\xodnj\Desktop\project\rainbow`. 테스트 명령(공통):
 
 ```bash
-"/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe" --headless=new --disable-gpu --dump-dom "file:///C:/Users/xodnj/Desktop/project/rainbow/test/test.html" 2>/dev/null | grep -E "PASS|FAIL|passed"
+"/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe" --headless=new --disable-gpu --virtual-time-budget=8000 --dump-dom "file:///C:/Users/xodnj/Desktop/project/rainbow/test/test.html" 2>/dev/null | grep -E "PASS|FAIL|passed"
 ```
 
 현재 `31 passed, 0 failed`. 이미 반입된 파일(커밋 전 상태): `vendor/three.bundle.js`, `tools/three-entry.js`, `tools/README.md`, `assets/README.md`, 설계서 수정.

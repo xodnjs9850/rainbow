@@ -14,3 +14,19 @@ T.test("viewer: 동물별 절차적 모델은 서로 다른 부품 수를 가진
   T.ok(a > 0 && b > 0 && c > 0); T.ok(!(a === b && b === c), "세 동물 형태가 다르다");
   T.ok(V.coreAssembly().children.length >= 6, "코어 조립체 6부품 이상");
 });
+T.testAsync("viewer: base64 GLB(glbData)를 파싱해 kind=glb로 띄운다(file:// 대응)", function (done) {
+  var V = window.LB_VIEWER, box = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1), new THREE.MeshStandardMaterial({ color: 0x3B82F6 }));
+  new THREE.GLTFExporter().parse(box, function (buf) {
+    var u = new Uint8Array(buf), s = ""; for (var i = 0; i < u.length; i++) s += String.fromCharCode(u[i]);
+    var el = T.stage('<div style="width:200px;height:200px"></div>').firstChild;
+    var h = V.mount(el, { glbData: btoa(s), onReady: function (kind) {
+      try { T.eq(kind, "glb"); T.ok(h.scene.children.some(function (c) { return c.isGroup || c.isMesh || c.isScene || c.isObject3D; })); h.setInsert(true); T.eq(h.insert(), true); h.dispose(); done(); } catch (e) { done(e); }
+    } });
+  }, function (err) { done(err); }, { binary: true });
+});
+T.testAsync("viewer: 깨진 glbData는 절차적 모델로 대체된다", function (done) {
+  var el = T.stage('<div style="width:200px;height:200px"></div>').firstChild;
+  var h = LB_VIEWER.mount(el, { glbData: btoa("not a glb"), animal: "dino", onReady: function (kind) {
+    try { T.eq(kind, "procedural"); h.dispose(); done(); } catch (e) { done(e); }
+  } });
+});
