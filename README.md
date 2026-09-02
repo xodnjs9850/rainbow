@@ -50,6 +50,16 @@
 
 3D 미리보기는 레포 안 `vendor/three.bundle.js`(Three.js)로 동작하며 외부 요청이 없습니다. 마우스로 드래그해 돌려볼 수 있고, 올려두면 회전이 멈춥니다.
 
+## 배포(GitHub Pages)
+
+공개 주소는 https://xodnjs9850.github.io/rainbow/ 이며 master 루트를 그대로 서빙한다. 수정 후에는 아래 순서로 올린다. `bump-version.js`가 스크립트·CSS 주소에 `?v=시각`을 붙여 CDN·브라우저의 옛 파일 캐시를 피한다(GitHub Pages는 10분 캐시). 반영은 보통 1~2분.
+
+```
+node tools/bump-version.js
+git add -A && git commit -m "..."
+git push origin master
+```
+
 ## 오프라인으로 열기
 
 이 폴더를 통째로 복사해 `index.html`을 더블클릭하면 인터넷 없이 동작합니다. 외부 자원(CDN·웹폰트·스크립트)을 쓰지 않습니다.
