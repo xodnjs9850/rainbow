@@ -1,17 +1,23 @@
 // Three.js 3D 뷰어. GLB를 띄우고, 없으면 절차적 캐릭터로 대체한다. WebGL이 없으면 mount가 null을 돌려준다.
 // GLB는 file://에서 fetch가 막히므로 opts.glbData(base64, assets/toto.glb.js가 제공)로 파싱한다. http로 열릴 때만 opts.glb URL을 fetch한다.
 window.LB_VIEWER = (function () {
-  var T = window.THREE, lastHandle = null;
+  var T = window.THREE, lastHandle = null, supportedCache = null;
   var COLORS = { blue: 0x3B82F6, yellow: 0xF59E0B, green: 0x22C55E };
   function supported() {
-    if (!T) return false;
-    try { var c = document.createElement("canvas"); return !!(c.getContext("webgl2") || c.getContext("webgl")); } catch (e) { return false; }
+    if (supportedCache !== null) return supportedCache;
+    if (!T) return (supportedCache = false);
+    try {
+      var c = document.createElement("canvas"), gl = c.getContext("webgl2") || c.getContext("webgl");
+      supportedCache = !!gl;
+      if (gl) { var lose = gl.getExtension("WEBGL_lose_context"); if (lose) lose.loseContext(); }
+    } catch (e) { supportedCache = false; }
+    return supportedCache;
   }
   function b64ToBuf(b64) { var bin = atob(b64), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u.buffer; }
   function toon(hex) { return new T.MeshToonMaterial({ color: hex }); }
   // 절차적 캐릭터: 머리·몸통·눈·팔 + 동물별 특징. 높이 약 3.2, 바닥 y≈-1.2.
   function procedural(animal, hex) {
-    var g = new T.Group(), m = toon(hex), dark = new T.MeshStandardMaterial({ color: 0x1F2937 });
+    var g = new T.Group(), m = toon(hex), dark = new T.MeshStandardMaterial({ color: 0x1F2937 }); g.name = "lbModel";
     var head = new T.Mesh(new T.SphereGeometry(0.8, 48, 48), m); head.position.y = 1; g.add(head);
     var body = new T.Mesh(new T.CapsuleGeometry(0.5, 0.6, 8, 24), m); body.position.y = -0.3; g.add(body);
     [-0.28, 0.28].forEach(function (x) { var e = new T.Mesh(new T.SphereGeometry(0.09, 16, 16), dark); e.position.set(x, 1.1, 0.72); g.add(e); });
@@ -33,7 +39,7 @@ window.LB_VIEWER = (function () {
     for (var i = -64; i < 128; i += 16) { x.beginPath(); x.moveTo(i, 64); x.lineTo(i + 64, 0); x.stroke(); }
     var t = new T.CanvasTexture(c); t.wrapS = t.wrapT = T.RepeatWrapping; t.repeat.set(3, 1); return t;
   }
-  // BLE Core Insert 조립체: 코어 박스·버튼·LED·부저 3점·배터리·keep-out 판. 몸통 위치(y≈-0.3) 기준.
+  // BLE Core Insert 조립체: 코어 박스·버튼·LED·부저 3점·배터리·keep-out 판. 절차적 모델 기준 위치(몸통 y≈-0.3)로 초기화하며, GLB에서는 fit() 결과로 재배치한다.
   function coreAssembly() {
     var g = new T.Group();
     var box = new T.Mesh(new T.BoxGeometry(0.72, 0.48, 0.16), new T.MeshStandardMaterial({ color: 0x1F4E79, transparent: true, opacity: 0.9 })); g.add(box);
@@ -45,15 +51,18 @@ window.LB_VIEWER = (function () {
     g.position.set(0, -0.3, 0.3);
     return g;
   }
-  function fit(obj) { // 높이 2.6에 맞춰 스케일·중심 정렬, 바닥 y=-1.2
+  function fit(obj) { // 높이 2.6/폭 3.4에 맞춰 스케일·중심 정렬, 바닥 y=-1.2. 스케일·배치 후의 월드 박스를 돌려준다(코어 재배치용).
     var b = new T.Box3().setFromObject(obj), size = new T.Vector3(), c = new T.Vector3(); b.getSize(size); b.getCenter(c);
-    var s = 2.6 / Math.max(size.y, 1e-6); obj.scale.setScalar(s);
+    var s = Math.min(2.6 / Math.max(size.y, 1e-6), 3.4 / Math.max(size.x, size.z, 1e-6));
+    obj.scale.setScalar(s);
     obj.position.set(-c.x * s, -b.min.y * s - 1.2, -c.z * s);
+    return new T.Box3().setFromObject(obj);
   }
   // opts: { glb?, glbData?(base64), animal?, color?("blue"|"yellow"|"green" 또는 0xRRGGBB), onReady?(kind) }
   function mount(el, opts) {
     opts = opts || {};
     if (!supported() || !el) return null;
+    if (lastHandle) lastHandle.dispose(); // 뷰어는 항상 하나만 산다.
     var w = el.clientWidth || 320, h = el.clientHeight || 300;
     var renderer = new T.WebGLRenderer({ antialias: true, alpha: true }); renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); renderer.setSize(w, h);
     el.appendChild(renderer.domElement);
@@ -64,33 +73,74 @@ window.LB_VIEWER = (function () {
     controls.enablePan = false; controls.enableZoom = false; controls.autoRotate = true; controls.autoRotateSpeed = 3; controls.target.set(0, 0.2, 0);
     var hex = typeof opts.color === "number" ? opts.color : (COLORS[opts.color] || COLORS.blue);
     var model = null, kind = null, inserted = false, core = coreAssembly(); core.visible = false; scene.add(core);
-    var originals = [];
+    var raf = 0, alive = true;
     function ready(k) { kind = k; if (opts.onReady) opts.onReady(k); }
-    function useProcedural() { model = procedural(opts.animal || "rabbit", hex); scene.add(model); ready("procedural"); if (inserted) applyInsert(true); }
-    function onGltf(gltf) { model = gltf.scene; fit(model); scene.add(model); ready("glb"); if (inserted) applyInsert(true); }
+    function useProcedural() {
+      if (!alive) return;
+      model = procedural(opts.animal || "rabbit", hex); scene.add(model); ready("procedural"); if (inserted) applyInsert(true);
+    }
+    function onGltf(gltf) {
+      if (!alive) return;
+      model = gltf.scene; model.name = "lbModel"; var box = fit(model); scene.add(model);
+      core.position.set(0, box.min.y + (box.max.y - box.min.y) * 0.45, box.max.z - (box.max.z - box.min.z) / 3);
+      ready("glb"); if (inserted) applyInsert(true);
+    }
     if (opts.glbData) {
-      try { new T.GLTFLoader().parse(b64ToBuf(opts.glbData), "", onGltf, function () { setTimeout(useProcedural, 0); }); }
-      catch (e) { setTimeout(useProcedural, 0); }
+      try { new T.GLTFLoader().parse(b64ToBuf(opts.glbData), "", onGltf, function () { if (!alive) return; setTimeout(useProcedural, 0); }); }
+      catch (e) { if (alive) setTimeout(useProcedural, 0); }
     } else if (opts.glb && location.protocol !== "file:") {
-      new T.GLTFLoader().load(opts.glb, onGltf, undefined, function () { useProcedural(); });
+      new T.GLTFLoader().load(opts.glb, onGltf, undefined, function () { if (!alive) return; useProcedural(); });
     } else useProcedural();
     function applyInsert(on) {
+      core.visible = on;
       if (!model) return;
       model.traverse(function (o) {
         if (!o.isMesh) return;
-        if (!o.userData.lbOrig) { o.userData.lbOrig = o.material; o.material = Array.isArray(o.material) ? o.material.map(function (m) { return m.clone(); }) : o.material.clone(); originals.push(o); }
-        (Array.isArray(o.material) ? o.material : [o.material]).forEach(function (m) { m.transparent = true; m.opacity = on ? 0.35 : 1; m.depthWrite = !on; m.needsUpdate = true; });
+        if (on) {
+          if (!o.userData.lbOrig) {
+            o.userData.lbOrig = o.material;
+            o.material = Array.isArray(o.material) ? o.material.map(function (m) { return m.clone(); }) : o.material.clone();
+          }
+          (Array.isArray(o.material) ? o.material : [o.material]).forEach(function (m) { m.transparent = true; m.opacity = 0.35; m.depthWrite = false; m.needsUpdate = true; });
+        } else if (o.userData.lbOrig) {
+          (Array.isArray(o.material) ? o.material : [o.material]).forEach(function (m) { m.dispose(); });
+          o.material = o.userData.lbOrig; delete o.userData.lbOrig;
+        }
       });
-      core.visible = on;
     }
     function setInsert(on) { inserted = !!on; applyInsert(inserted); }
-    el.addEventListener("mouseenter", function () { controls.autoRotate = false; });
-    el.addEventListener("mouseleave", function () { controls.autoRotate = true; });
-    var raf = 0, alive = true;
-    function loop() { if (!alive) return; controls.update(); renderer.render(scene, camera); raf = requestAnimationFrame(loop); }
+    function onEnter() { controls.autoRotate = false; }
+    function onLeave() { controls.autoRotate = true; }
+    el.addEventListener("mouseenter", onEnter);
+    el.addEventListener("mouseleave", onLeave);
+    var ro = null;
+    if (typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(function () {
+        w = el.clientWidth || w; h = el.clientHeight || h;
+        renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix();
+      });
+      ro.observe(el);
+    }
+    function loop() {
+      if (!alive) return;
+      if (renderer.domElement.isConnected) { controls.update(); renderer.render(scene, camera); }
+      raf = requestAnimationFrame(loop);
+    }
     loop();
     function dispose() {
-      alive = false; cancelAnimationFrame(raf); controls.dispose(); renderer.dispose();
+      alive = false; cancelAnimationFrame(raf);
+      el.removeEventListener("mouseenter", onEnter); el.removeEventListener("mouseleave", onLeave);
+      if (ro) ro.disconnect();
+      scene.traverse(function (o) {
+        if (!o.isMesh) return;
+        if (o.geometry) o.geometry.dispose();
+        (Array.isArray(o.material) ? o.material : (o.material ? [o.material] : [])).forEach(function (m) {
+          if (m.map) m.map.dispose();
+          m.dispose();
+        });
+      });
+      scene.clear();
+      controls.dispose(); renderer.dispose(); renderer.forceContextLoss();
       if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement);
       if (lastHandle === handle) lastHandle = null;
     }

@@ -406,5 +406,5 @@ git add README.md && git commit -m "docs: README — 캐릭터 자산 넣기 안
 ## 자기 검토
 
 - 스펙 §3.3 행 2(실제 이미지, SVG 대체) → Task 3. 행 3(Three.js, GLB, 절차적 대체, 반투명+코어 조립체, 범례, 회전 계속·hover 정지·드래그) → Task 1·2. §5 파일 구조(viewer.js, vendor, assets) → Task 1. 외부 자원 0 → 번들·로컬 자산만.
-- 타이밍: 뷰어는 장면 3에서 한 번만 마운트되고 `reset()`에서 dispose되므로 장면 이탈·R 초기화 시 WebGL 컨텍스트가 누적되지 않는다(엔진은 reset → stage 비움 → render 순서).
+- 뷰어는 장면 3 진입 시 한 번 마운트되고, 장면을 떠날 때 exit()에서, R 초기화 시 reset()에서 dispose된다. dispose는 컨텍스트(forceContextLoss)·지오메트리·재질·텍스처를 해제하고, mount는 이전 핸들을 먼저 dispose해 뷰어가 항상 하나만 산다.
 - GLB 404는 자산 미투입 상태의 정상 동작. 파일이 들어오면 콘솔 오류도 사라진다.

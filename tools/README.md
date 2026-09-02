@@ -9,4 +9,4 @@ cp <rainbow>/tools/three-entry.js entry.js
 npx esbuild entry.js --bundle --minify --format=iife --outfile=<rainbow>/vendor/three.bundle.js
 ```
 
-결과는 classic `<script>`로 로드되는 단일 IIFE이며 `window.THREE`에 Three.js 전체와 `GLTFLoader`, `OrbitControls`를 붙인다. 외부 요청 없음.
+결과는 classic `<script>`로 로드되는 단일 IIFE이며 `window.THREE`에 Three.js 전체와 `GLTFLoader`, `GLTFExporter`(테스트용), `OrbitControls`를 붙인다. 외부 요청 없음.

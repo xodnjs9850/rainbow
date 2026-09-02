@@ -11,13 +11,13 @@ window.T = (function () {
     pending++;
     var finished = false;
     function finish(err) {
-      if (finished) return; finished = true; pending--;
+      if (finished) return; finished = true; pending--; clearTimeout(timer);
       if (err) { fail++; log("FAIL " + name + " — " + err.message); console.error(name, err); }
       else { pass++; log("PASS " + name); }
       flush();
     }
     try { fn(finish); } catch (e) { finish(e); }
-    setTimeout(function () { finish(new Error("timeout 4s")); }, 4000);
+    var timer = setTimeout(function () { finish(new Error("timeout 4s")); }, 4000);
   }
   function eq(a, b, msg) {
     if (a !== b) throw new Error((msg || "") + " expected " + JSON.stringify(b) + " got " + JSON.stringify(a));

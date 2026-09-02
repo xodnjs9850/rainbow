@@ -144,4 +144,15 @@
     mount([stub(1, "student", null, calls)]);
     T.eq(window.LB_DATA.hero.character, "토토");
   });
+  T.test("engine: exit()은 장면을 떠날 때 한 번 불리고, R(같은 장면 재진입)에서는 불리지 않는다", function () {
+    var calls = [];
+    var s1 = stub(1, "student", null, calls);
+    s1.exit = function () { calls.push("exit1"); };
+    mount([s1, stub(2, "student", null, calls)]);
+    T.eq(calls.join(","), "reset1,render1");
+    LB.goTo(2);
+    T.eq(calls.join(","), "reset1,render1,exit1,reset2,render2", "exit1은 reset2 이전에 불려야 한다");
+    LB.resetCurrent(); // R 초기화: 현재 장면(2)에 그대로 머무르므로 exit는 불리지 않는다
+    T.eq(calls.join(","), "reset1,render1,exit1,reset2,render2,reset2,render2", "같은 장면 재진입은 exit를 부르지 않는다");
+  });
 })();

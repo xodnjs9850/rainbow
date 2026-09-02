@@ -148,8 +148,9 @@ css/studio.css            학생 모드 레이아웃(진행 표시·그림카드
 js/data.js                §4 데이터 (window.LB_DATA)
 js/art.js                 인라인 SVG 헬퍼 (window.LB_ART: 캐릭터·소지방식 아이콘·BLE 단면 오버레이)
 js/viewer.js              Three.js 3D 뷰어 (window.LB_VIEWER: GLB 로드·절차적 대체·코어 삽입 표시·자동 회전)
-vendor/three.bundle.js    Three.js 0.170 + GLTFLoader + OrbitControls 단일 IIFE(tools/로 생성, 실행 시 빌드 없음)
+vendor/three.bundle.js    Three.js 0.170 + GLTFLoader + GLTFExporter(테스트용) + OrbitControls 단일 IIFE(tools/로 생성, 실행 시 빌드 없음)
 assets/                   사용자가 넣는 시연 자산: char-1~3.png, toto.glb (없으면 자동 대체)
+assets/toto.glb.js        base64 임베드 GLB. tools/pack-assets.js가 생성; 없으면 자리표시자
 js/demo.js                장면 엔진(qtrace-demo에서 이식 + §3.4 변경점)
 js/scenes/s1-consent.js   나의 안전, 나의 선택
 js/scenes/s2-character.js 그림에서 캐릭터로
@@ -168,7 +169,7 @@ docs/superpowers/specs/   이 문서
 docs/superpowers/plans/   구현 플랜
 ```
 
-- 스크립트는 전부 classic `<script>`(모듈 아님). 로드 순서: vendor/three.bundle → data → art → viewer → demo → scenes. 소개 페이지는 flow만 로드.
+- 스크립트는 전부 classic `<script>`(모듈 아님). 로드 순서: vendor/three.bundle → assets/toto.glb.js → data → art → viewer → demo → scenes. 소개 페이지는 flow만 로드.
 - 외부 자원 없음 원칙은 유지한다. Three.js는 레포 안 번들이며 네트워크 요청이 없다. `assets/`의 이미지·GLB는 같은 폴더의 로컬 파일이다.
 - 글꼴: `"Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif`. 교사 모드 본문 16px, 표·카드 15px 이상, 제목 22px 이상. 학생 모드 본문 18px 이상, 버튼 20px, 제목 28px 이상(1920×1080 프로젝터 기준).
 - 색 토큰. 공통: 배경 `#F4F6F8`, 카드 `#FFFFFF`, 성공 `#16A34A`, 경고 `#B45309`/`#FFFBEB`, 위험 `#DC2626`, 텍스트 `#1F2937`/`#6B7280`. 교사 포인트 `#1F4E79`. 학생 포인트 `#2563EB`, 보조 `#F59E0B`, 배경 `#FFFDF7`, 카드 모서리 16px. AI 산출물 표시는 두 모드 공통 연한 파랑 `#EFF6FF`, 규칙 엔진·사실값 표시는 회색 `#F3F4F6`.

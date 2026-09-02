@@ -47,6 +47,7 @@
     summary: "Tripo가 외형을 만들고 규칙 엔진이 BLE 코어 공간을 넣는다",
     note: "Tripo는 외형만 만듭니다. 치수·공차·안테나 공간은 규칙 기반 엔진이 넣습니다. 프롬프트만으로 케이스가 나오지 않습니다.",
     reset: function () { stage = 0; inserted = false; scheduled = false; if (viewer) { viewer.dispose(); viewer = null; } },
+    exit: function () { if (viewer) { viewer.dispose(); viewer = null; } },
     render: function (r, d) {
       root = r; data = d; skeleton(); paintTask(); paintActions();
       if (!scheduled) {

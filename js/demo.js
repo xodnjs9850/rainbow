@@ -1,5 +1,6 @@
 // 장면 엔진(qtrace-demo에서 이식). 장면 내부를 모른다. 장면은 registerScene 규약만 지킨다.
-// 장면 규약: { id, mode:"student"|"teacher", key(교사 사이드바 메뉴 키 또는 null), keys?, title, summary, note?, reset(), render(root, data) }
+// 장면 규약: { id, mode:"student"|"teacher", key(교사 사이드바 메뉴 키 또는 null), keys?, title, summary, note?, reset(), render(root, data), exit?() }
+// - exit()은 선택. 장면을 떠날 때 한 번 호출. 뷰어 같은 외부 자원 해제용. reset과 달리 진입 시에는 불리지 않는다.
 // - data는 장면 진입마다 원본에서 다시 복제되므로 바꿔도 남지 않는다.
 // - 리스너는 render가 받은 root 안에서만 건다.
 // - 지연 실행은 LB.later(fn, ms)로만 한다. 장면 전환 시 엔진이 전부 해제한다. 테스트는 LB.sync=true로 즉시 실행.
@@ -88,6 +89,8 @@ window.LB = (function () {
   function goTo(n) {
     var s = find(n); if (!els) return;
     if (!s) { if (find(current) && location.hash !== "#" + current) history.replaceState(null, "", "#" + current); return; }
+    var prevScene = find(current);
+    if (prevScene && prevScene !== s && typeof prevScene.exit === "function") { try { prevScene.exit(); } catch (e) { console.error(e); } }
     current = n; clearTimers(); badge(0); crumb(""); hideQuit();
     // 장면마다 데이터를 원본에서 다시 복제한다. 리허설을 몇 번 돌려도 결과가 같아야 한다.
     if (BASE) window.LB_DATA = clone(BASE);

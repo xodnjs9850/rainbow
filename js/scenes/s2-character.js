@@ -1,6 +1,6 @@
 (function () {
-  var esc = LB.esc, root, data, tab, sel, loading, results, chosen, named, name;
-  function init() { tab = "cards"; sel = { animal: null, color: null, face: null }; loading = false; results = null; chosen = null; named = false; name = null; }
+  var esc = LB.esc, root, data, tab, sel, loading, results, chosen, named, name, failed;
+  function init() { tab = "cards"; sel = { animal: null, color: null, face: null }; loading = false; results = null; chosen = null; named = false; name = null; failed = [false, false, false]; }
   function colorHex(id) { var h = "#3B82F6"; data.cards.colors.forEach(function (c) { if (c.id === id) h = c.hex; }); return h; }
   function ready() { return !!(sel.animal && sel.color && sel.face); }
   function group(title, key, items) {
@@ -15,7 +15,7 @@
     if (loading) right = '<div class="gen-wait"><div class="spinner"></div><p>AI가 그림을 그리고 있어요…</p></div>';
     else if (results) right = '<div class="char-grid">' + results.map(function (r, i) {
         return '<button class="char' + (chosen === i ? ' on' : '') + '" data-i="' + i + '"' + (named ? ' disabled' : '') + '>'
-          + '<span class="char-pic"><img src="' + esc(r.src) + '" alt="' + (i + 1) + '안"></span><span>' + (i + 1) + '안</span></button>';
+          + '<span class="char-pic">' + (failed[i] ? r.svg : '<img src="' + esc(r.src) + '" alt="' + (i + 1) + '안">') + '</span><span>' + (i + 1) + '안</span></button>';
       }).join("") + '</div>'
       + '<div class="log">' + data.filterLog.map(esc).join(' · ') + '</div>'
       + (chosen !== null ? '<div class="name-row"><label>이름</label><input id="s2-name" type="text" value="' + esc(name) + '"' + (named ? ' disabled' : '') + '>'
@@ -45,7 +45,7 @@
       }, 1500);
     };
     root.querySelectorAll(".char img").forEach(function (im, i) {
-      im.onerror = function () { var pic = im.parentNode; if (pic) pic.innerHTML = results[i].svg; };
+      im.onerror = function () { failed[i] = true; var pic = im.parentNode; if (pic) pic.innerHTML = results[i].svg; };
     });
     root.querySelectorAll(".char").forEach(function (b) { b.onclick = function () { if (named) return; chosen = parseInt(b.getAttribute("data-i"), 10); paint(); }; });
     var ok = root.querySelector("#s2-ok");

@@ -14,6 +14,8 @@ T.test("s3: Tripo 작업이 success에 도달하면 BLE 코어 넣기가 열리�
   T.ok(root.querySelector("#s3-view canvas"), "삽입 후에도 같은 캔버스(재마운트 없음)");
   T.has(root, "42×28×9mm"); T.has(root, "0.25mm/side");
   s.reset(); T.ok(!root.querySelector("#s3-view canvas"), "reset이 뷰어를 dispose");
+  s.render(root, LB_DATA); T.ok(root.querySelector("#s3-view canvas"), "재렌더 후 캔버스 재생성");
+  s.exit(); T.eq(LB_VIEWER.last(), null, "exit 후 뷰어 핸들 없음"); T.ok(!root.querySelector("#s3-view canvas"), "exit 후 캔버스 제거");
 });
 T.test("s3: sync가 아니면 처음엔 queued이고 버튼이 잠겨 있다", function () {
   restoreScenes(); var s = sceneById(3); LB.sync = false;
