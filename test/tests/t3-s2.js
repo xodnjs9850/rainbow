@@ -13,7 +13,8 @@ T.test("s2: 카드 3종 선택 → AI 그림 만들기 → 3안 + 필터 로그 
   T.ok(!root.querySelector("#s2-gen").disabled);
   root.querySelector("#s2-gen").click(); // LB.sync=true → 즉시 생성
   T.eq(root.querySelectorAll(".char").length, 3); T.has(root.querySelector(".log"), "학생 사진 없음");
-  T.ok(root.querySelector(".char .char-svg").outerHTML.indexOf("#3B82F6") > 0, "선택한 색");
+  var img = root.querySelector('.char[data-i="0"] img'); T.ok(img, "실제 이미지 태그");
+  T.ok(/assets\/char-1\.png$/.test(img.getAttribute("src")), "assets/char-1.png");
   T.ok(!root.querySelector("#s2-name"), "선택 전엔 이름 없음");
   root.querySelector('.char[data-i="0"]').click();
   T.eq(root.querySelector("#s2-name").value, "토토");
@@ -39,4 +40,17 @@ T.test("s2: 공백만 입력한 이름은 기본값으로 돌아간다", functio
   var ni = root.querySelector("#s2-name"); ni.value = "   "; ni.dispatchEvent(new Event("input"));
   root.querySelector("#s2-ok").click();
   T.has(root.querySelector("#s2-done"), "토토 선택 완료", "공백 이름은 기본값으로");
+});
+
+T.test("s2: 이미지 로드 실패 시 SVG 캐릭터로 대체된다", function () {
+  restoreScenes(); var s = sceneById(2);
+  var root = T.stage(""); s.reset(); s.render(root, LB_DATA);
+  root.querySelector('.opt[data-group="animal"][data-id="dino"]').click();
+  root.querySelector('.opt[data-group="color"][data-id="green"]').click();
+  root.querySelector('.opt[data-group="face"][data-id="smile"]').click();
+  root.querySelector("#s2-gen").click();
+  var img = root.querySelector('.char[data-i="1"] img'); T.ok(img);
+  img.onerror();   // 브라우저의 onerror를 직접 호출해 대체 경로 검증
+  var svg = root.querySelector('.char[data-i="1"] .char-svg'); T.ok(svg, "SVG 대체");
+  T.ok(svg.outerHTML.indexOf("#22C55E") > 0, "선택한 색 반영"); T.ok(!root.querySelector('.char[data-i="1"] img'), "img 제거");
 });

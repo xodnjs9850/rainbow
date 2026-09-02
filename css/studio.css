@@ -44,6 +44,9 @@ body.mode-student .stage .hint{font-size:16px}
 .char{padding:12px;border:3px solid var(--line);border-radius:16px;background:#fff;cursor:pointer;font:inherit;font-size:16px;color:var(--text)}
 .char.on{border-color:var(--student);background:#EFF6FF}
 .char-svg{width:100%;height:auto;display:block}
+.char-pic{display:block;aspect-ratio:1/1;border-radius:12px;overflow:hidden;background:#fff}
+.char-pic img{display:block;width:100%;height:100%;object-fit:contain}
+.char-pic .char-svg{width:100%;height:100%}
 .name-row{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
 .name-row input{font:inherit;font-size:20px;padding:10px 14px;border:2px solid #CBD5E1;border-radius:10px;width:200px}
 .row.three > .card{flex:1}
