@@ -9,6 +9,8 @@ T.test("s3: Tripo 작업이 success에 도달하면 BLE 코어 넣기가 열리�
   T.ok(!root.querySelector("#s3-insert").disabled);
   root.querySelector("#s3-insert").click();
   T.ok(!root.querySelector("#s3-overlay").hidden); T.has(root.querySelector("#s3-overlay"), "keep-out");
+  T.ok(!root.querySelector(".spin-inner #s3-overlay"), "오버레이는 회전 레이어 밖에 있어야 한다");
+  T.ok(root.querySelector(".spin #s3-overlay"), "오버레이는 spin 안에 있다");
   T.ok(root.querySelector("#s3-done")); T.ok(root.querySelector("#s3-insert").disabled);
   T.has(root, "42×28×9mm"); T.has(root, "0.25mm/side");
 });

@@ -11,6 +11,25 @@ T.test("s1: 소지방식 3장 선택 + 약속 3개 체크 → 약속했어요 �
   T.ok(!root.querySelector("#s1-go").disabled);
   root.querySelector("#s1-go").click();
   T.ok(root.querySelector("#s1-done")); T.has(root.querySelector("#s1-summary"), "손목 밴드"); T.has(root.querySelector("#s1-summary"), "LB-0917-03");
+  root.querySelector('.pick[data-id="clip"]').click();
+  T.has(root.querySelector("#s1-summary"), "손목 밴드", "완료 후에는 소지방식이 바뀌지 않는다");
+  T.ok(root.querySelector('.pick[data-id="clip"]').disabled, "완료 후엔 선택 버튼 비활성");
   s.reset(); root.innerHTML = ""; s.render(root, LB_DATA);
   T.ok(!root.querySelector("#s1-done"), "reset 후 초기 상태");
+});
+T.test("s1: 약속 개수가 데이터마다 달라도 전부 체크해야 활성화된다", function () {
+  restoreScenes(); var s = sceneById(1);
+  var root = T.stage("");
+  var d = JSON.parse(JSON.stringify(LB_DATA)); d.consent.promises.push("네 번째 약속");
+  s.reset(); s.render(root, d);
+  T.eq(root.querySelectorAll(".promise input").length, 4);
+  root.querySelector('.pick[data-id="band"]').click();
+  for (var i = 0; i < 3; i++) {
+    var box = root.querySelectorAll(".promise input")[i];
+    box.checked = true; box.dispatchEvent(new Event("change"));
+  }
+  T.ok(root.querySelector("#s1-go").disabled, "3/4만 체크하면 비활성");
+  var last = root.querySelectorAll(".promise input")[3];
+  last.checked = true; last.dispatchEvent(new Event("change"));
+  T.ok(!root.querySelector("#s1-go").disabled, "4/4 체크하면 활성");
 });

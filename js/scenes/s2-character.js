@@ -1,12 +1,12 @@
 (function () {
   var esc = LB.esc, root, data, tab, sel, loading, results, chosen, named, name;
-  function init() { tab = "cards"; sel = { animal: null, color: null, face: null }; loading = false; results = null; chosen = null; named = false; name = "토토"; }
+  function init() { tab = "cards"; sel = { animal: null, color: null, face: null }; loading = false; results = null; chosen = null; named = false; name = null; }
   function colorHex(id) { var h = "#3B82F6"; data.cards.colors.forEach(function (c) { if (c.id === id) h = c.hex; }); return h; }
   function ready() { return !!(sel.animal && sel.color && sel.face); }
   function group(title, key, items) {
     return '<div class="opt-group"><h4>' + title + '</h4><div class="opts">' + items.map(function (it) {
-      var sw = it.hex ? ' style="--sw:' + it.hex + '"' : '';
-      return '<button class="opt' + (sel[key] === it.id ? ' on' : '') + '" data-group="' + key + '" data-id="' + it.id + '"' + sw + '>'
+      var sw = it.hex ? ' style="--sw:' + esc(it.hex) + '"' : '';
+      return '<button class="opt' + (sel[key] === it.id ? ' on' : '') + '" data-group="' + esc(key) + '" data-id="' + esc(it.id) + '"' + sw + (results ? ' disabled' : '') + '>'
         + (it.hex ? '<i class="swatch"></i>' : '') + esc(it.name) + '</button>';
     }).join("") + '</div></div>';
   }
@@ -14,7 +14,7 @@
     var right;
     if (loading) right = '<div class="gen-wait"><div class="spinner"></div><p>AI가 그림을 그리고 있어요…</p></div>';
     else if (results) right = '<div class="char-grid">' + results.map(function (svg, i) {
-        return '<button class="char' + (chosen === i ? ' on' : '') + '" data-i="' + i + '">' + svg + '<span>' + (i + 1) + '안</span></button>';
+        return '<button class="char' + (chosen === i ? ' on' : '') + '" data-i="' + i + '"' + (named ? ' disabled' : '') + '>' + svg + '<span>' + (i + 1) + '안</span></button>';
       }).join("") + '</div>'
       + '<div class="log">' + data.filterLog.map(esc).join(' · ') + '</div>'
       + (chosen !== null ? '<div class="name-row"><label>이름</label><input id="s2-name" type="text" value="' + esc(name) + '"' + (named ? ' disabled' : '') + '>'
@@ -34,7 +34,7 @@
     root.querySelectorAll(".tab").forEach(function (b) { b.onclick = function () { tab = b.getAttribute("data-tab"); paint(); }; });
     root.querySelectorAll(".opt").forEach(function (b) { b.onclick = function () { if (results) return; sel[b.getAttribute("data-group")] = b.getAttribute("data-id"); paint(); }; });
     root.querySelector("#s2-gen").onclick = function () {
-      if (!ready() || results) return; loading = true; paint();
+      if (!ready() || loading || results) return; loading = true; paint();
       LB.later(function () {
         loading = false;
         results = [0, 1, 2].map(function (p) { return LB_ART.character(sel.animal, colorHex(sel.color), sel.face, p); });
@@ -43,13 +43,15 @@
     };
     root.querySelectorAll(".char").forEach(function (b) { b.onclick = function () { if (named) return; chosen = parseInt(b.getAttribute("data-i"), 10); paint(); }; });
     var ok = root.querySelector("#s2-ok");
-    if (ok) ok.onclick = function () { name = root.querySelector("#s2-name").value || data.hero.character; named = true; paint(); };
+    if (ok) ok.onclick = function () { name = (root.querySelector("#s2-name").value || "").trim() || data.hero.character; named = true; paint(); };
+    var ni = root.querySelector("#s2-name");
+    if (ni) ni.oninput = function () { name = ni.value; };
   }
   LB.registerScene({
     id: 2, mode: "student", key: "studio", title: "그림에서 캐릭터로",
     summary: "학생의 표현을 AI가 오리지널 캐릭터로 바꾼다",
     note: "학생의 표현을 오리지널 캐릭터로 만듭니다. 사진은 쓰지 않고 이름·연락처는 밖으로 나가지 않습니다.",
     reset: function () { init(); },
-    render: function (r, d) { root = r; data = d; paint(); }
+    render: function (r, d) { root = r; data = d; if (name == null) name = d.hero.character; paint(); }
   });
 })();

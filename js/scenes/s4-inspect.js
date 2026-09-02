@@ -12,7 +12,7 @@
           var label = st === "warn" ? '<span class="badge warn">경고 · ' + esc(c.warn) + '</span>'
             : st === "ok" ? '<span class="badge ok">통과' + (c.warn && fixed ? ' · ' + esc(c.fixed) : '') + '</span>'
             : '<span class="badge gray">대기</span>';
-          return '<li class="chk ' + (st || '') + '" data-id="' + c.id + '"><span>' + esc(c.name) + '</span>' + label + '</li>';
+          return '<li class="chk ' + (st || '') + '" data-id="' + esc(c.id) + '"><span>' + esc(c.name) + '</span>' + label + '</li>';
         }).join("") + '</ul>'
       + '<div class="actions"><button id="s4-run" class="btn big"' + (running || doneCount ? ' disabled' : '') + '>자동 검수</button>'
       + (!running && hasWarn() ? '<button id="s4-fix" class="btn big ghost">자동 보정</button>' : '') + '</div>'

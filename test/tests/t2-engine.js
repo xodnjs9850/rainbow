@@ -111,6 +111,10 @@
     }
     imeKey("KeyN"); T.ok(document.body.classList.contains("notes-on"), "IME 중 N으로 메모 켜짐");
     imeKey("KeyN"); T.ok(!document.body.classList.contains("notes-on"), "IME 중 N으로 메모 꺼짐");
+    var ev2 = new KeyboardEvent("keydown", { key: "Process", code: "KeyR", ctrlKey: true, bubbles: true });
+    Object.defineProperty(ev2, "keyCode", { get: function () { return 229; } });
+    calls.length = 0; document.dispatchEvent(ev2);
+    T.eq(calls.join(","), "", "IME 중 Ctrl+R은 장면 리셋이 아니다");
   });
   T.test("engine: badge/crumb/esc", function () {
     var calls = [];

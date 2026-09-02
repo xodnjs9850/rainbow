@@ -10,8 +10,8 @@
       + '<div class="bar"><i style="width:' + [10, 60, 100][stage] + '%"></i></div>'
       + (stage === 2 ? '<p id="s3-time" class="hint">생성 시간 ' + esc(t.genTime) + '</p>' : '<p class="hint">모델을 만들고 있어요…</p>') + '</div>'
       + '<div class="card center"><h3>3D 미리보기</h3>'
-      + '<div class="spin' + (stage < 2 ? ' dim' : '') + '"><div class="spin-inner">' + LB_ART.character(h.animal, hex, h.face, 0)
-      + '<div id="s3-overlay" class="overlay"' + (inserted ? '' : ' hidden') + '>' + LB_ART.insertOverlay() + '</div></div></div>'
+      + '<div class="spin' + (stage < 2 ? ' dim' : '') + '" style="position:relative"><div class="spin-inner">' + LB_ART.character(h.animal, hex, h.face, 0) + '</div>'
+      + '<div id="s3-overlay" class="overlay"' + (inserted ? '' : ' hidden') + '>' + LB_ART.insertOverlay() + '</div></div>'
       + '<p class="hint">실제 Tripo 출력이 아닌 시연용 미리보기</p>'
       + '<div class="actions" style="justify-content:center"><button id="s3-insert" class="btn big"' + (stage === 2 && !inserted ? '' : ' disabled') + '>BLE 코어 넣기</button>'
       + (inserted ? '<span id="s3-done" class="badge ok big">코어 공간 결합 완료</span>' : '') + '</div></div>'

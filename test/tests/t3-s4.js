@@ -8,6 +8,9 @@ T.test("s4: 자동 검수 8항목 → 벽두께 경고 → 자동 보정 → 전
   T.eq(root.querySelectorAll(".chk.ok").length, 7); T.eq(root.querySelectorAll(".chk.warn").length, 1);
   T.has(root.querySelector(".chk.warn"), "귀 끝 1.6mm"); T.ok(root.querySelector("#s4-fix"));
   T.ok(!root.querySelector("#s4-approve-card"), "경고가 있으면 승인 카드 없음");
+  root.querySelector("#s4-run").onclick();
+  T.eq(root.querySelectorAll(".chk.ok").length, 7, "이미 실행된 검수는 재실행되지 않는다");
+  T.ok(root.querySelector("#s4-run").disabled, "실행 후엔 버튼 비활성");
   root.querySelector("#s4-fix").click();
   T.eq(root.querySelectorAll(".chk.ok").length, 8); T.has(root.querySelector('.chk[data-id="wall"]'), "2.1mm");
   T.ok(root.querySelector("#s4-approve-card")); T.has(root.querySelector("#s4-approve-card"), "제작담당 승인 필요");
