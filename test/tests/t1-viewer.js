@@ -74,3 +74,12 @@ T.testAsync("viewer: 깨진 glbData는 절차적 모델로 대체된다", functi
     try { T.eq(kind, "procedural"); h.dispose(); done(); } catch (e) { done(e); }
   } });
 });
+
+T.test("viewer: colorize는 재질 없는 메시에 캐릭터 색 토우 재질과 법선을 준다", function () {
+  var g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.Float32BufferAttribute([0, 0, 0, 1, 0, 0, 0, 1, 0], 3));
+  var m = new THREE.Mesh(g, new THREE.MeshStandardMaterial()); var grp = new THREE.Group(); grp.add(m);
+  LB_VIEWER.colorize(grp, 0x22C55E);
+  T.eq(m.material.type, "MeshToonMaterial"); T.eq(m.material.color.getHex(), 0x22C55E);
+  T.ok(m.geometry.attributes.normal, "법선 계산됨");
+});

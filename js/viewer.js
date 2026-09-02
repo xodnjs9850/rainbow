@@ -51,11 +51,21 @@ window.LB_VIEWER = (function () {
     g.position.set(0, -0.3, 0.3);
     return g;
   }
+  // 재질 없는 모델에 토우 재질 적용. 기존 재질은 해제한다.
+  function colorize(obj, hex) {
+    obj.traverse(function (o) {
+      if (!o.isMesh) return;
+      (Array.isArray(o.material) ? o.material : (o.material ? [o.material] : [])).forEach(function (m) { m.dispose(); });
+      if (!o.geometry.attributes.normal) o.geometry.computeVertexNormals();
+      o.material = toon(hex);
+    });
+    return obj;
+  }
   function fit(obj) { // 높이 2.6/폭 3.4에 맞춰 스케일·중심 정렬, 바닥 y=-1.2. 스케일·배치 후의 월드 박스를 돌려준다(코어 재배치용).
     var b = new T.Box3().setFromObject(obj), size = new T.Vector3(), c = new T.Vector3(); b.getSize(size); b.getCenter(c);
-    var s = Math.min(2.6 / Math.max(size.y, 1e-6), 3.4 / Math.max(size.x, size.z, 1e-6));
+    var s = Math.min(3.0 / Math.max(size.y, 1e-6), 3.6 / Math.max(size.x, size.z, 1e-6));
     obj.scale.setScalar(s);
-    obj.position.set(-c.x * s, -b.min.y * s - 1.2, -c.z * s);
+    obj.position.set(-c.x * s, -b.min.y * s - 1.4, -c.z * s);
     return new T.Box3().setFromObject(obj);
   }
   // opts: { glb?, glbData?(base64), animal?, color?("blue"|"yellow"|"green" 또는 0xRRGGBB), onReady?(kind) }
@@ -81,8 +91,11 @@ window.LB_VIEWER = (function () {
     }
     function onGltf(gltf) {
       if (!alive) return;
-      model = gltf.scene; model.name = "lbModel"; var box = fit(model); scene.add(model);
-      core.position.set(0, box.min.y + (box.max.y - box.min.y) * 0.45, box.max.z - (box.max.z - box.min.z) / 3);
+      model = gltf.scene; model.name = "lbModel";
+      // Meshy 미리보기처럼 재질이 없는 GLB는 캐릭터 색 토우 재질을 입힌다(기본 회색 방지).
+      var json = gltf.parser && gltf.parser.json; if (!json || !json.materials || !json.materials.length) colorize(model, hex);
+      var box = fit(model); scene.add(model);
+      core.position.set(0, box.min.y + (box.max.y - box.min.y) * 0.3, box.max.z - (box.max.z - box.min.z) / 3); // 몸통(아래 30%) 앞쪽
       ready("glb"); if (inserted) applyInsert(true);
     }
     if (opts.glbData) {
@@ -150,5 +163,5 @@ window.LB_VIEWER = (function () {
     lastHandle = handle; return handle;
   }
   function last() { return lastHandle; }
-  return { supported: supported, mount: mount, procedural: procedural, coreAssembly: coreAssembly, last: last, COLORS: COLORS };
+  return { supported: supported, mount: mount, procedural: procedural, coreAssembly: coreAssembly, colorize: colorize, last: last, COLORS: COLORS };
 })();

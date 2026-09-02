@@ -44,6 +44,8 @@
 
 `toto.glb`를 넣은 뒤 이 폴더에서 `node tools/pack-assets.js` 를 한 번 실행하세요(`assets/toto.glb.js` 생성). 더블클릭(file://) 실행에서는 브라우저가 로컬 파일 fetch를 막기 때문에 이 단계가 필요합니다. 임베드 파일(`assets/toto.glb.js`)이 있으면 file://·http 어디서나 그것을 우선 사용하고, 없을 때만 http 환경에서 `assets/toto.glb`를 직접 읽습니다.
 
+원본 GLB가 수십 MB면 `assets/README.md`의 경량화 절차(gltf-transform simplify)를 먼저 거친다. 재질이 없는 GLB에는 뷰어가 캐릭터 색을 자동으로 입힌다.
+
 3D 미리보기는 레포 안 `vendor/three.bundle.js`(Three.js)로 동작하며 외부 요청이 없습니다. 마우스로 드래그해 돌려볼 수 있고, 올려두면 회전이 멈춥니다.
 
 ## 오프라인으로 열기
