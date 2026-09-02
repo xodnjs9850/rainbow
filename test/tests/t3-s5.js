@@ -11,3 +11,14 @@ T.test("s5: 세션 설정·20행 대기 → 세션 시작 → 게이트웨이 �
   T.ok(root.querySelector("#s5-start").disabled);
   T.ok(root.textContent.indexOf("이름") >= 0 && root.textContent.indexOf("별칭") >= 0, "별칭 사용 표기");
 });
+
+T.test("s5: sync가 아니면 한 칸씩 켜진다", function () {
+  restoreScenes(); var s = sceneById(5); LB.sync = false;
+  var root = T.stage(""); s.reset(); s.render(root, LB_DATA);
+  root.querySelector("#s5-start").click();
+  T.eq(root.querySelectorAll("#s5-gw .badge.ok").length, 2);
+  T.eq(root.querySelectorAll("tr.stu.ok").length, 1);
+  T.has(root.querySelector(".head .badge"), "확인 중 1/20");
+  T.eq(LB.pending(), 1);
+  LB.clearTimers(); LB.sync = true;
+});

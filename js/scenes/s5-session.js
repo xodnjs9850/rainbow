@@ -1,7 +1,7 @@
 (function () {
   var esc = LB.esc, root, data, started, lit;
   function paint() {
-    var s = data.session, st = data.students, all = lit >= st.length;
+    var s = data.session, st = data.students, all = started && lit >= st.length;
     LB.crumb("세션 › " + s.activity);
     root.innerHTML = '<div class="head"><h2>' + esc(s.activity) + ' <span class="muted" style="font-size:16px;font-weight:400">' + esc(s.date) + ' · ' + esc(data.school.cls) + ' ' + st.length + '명</span></h2>'
       + (all ? '<span id="s5-check" class="badge ok">전원 확인 ' + esc(s.checkTime) + '</span>' : started ? '<span class="badge info">확인 중 ' + lit + '/' + st.length + '</span>' : '<span class="badge gray">세션 준비</span>') + '</div>'

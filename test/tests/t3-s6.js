@@ -22,3 +22,15 @@ T.test("s6: 상황 재생 → 노랑이 확인 필요 → 확인 → 인솔 복�
   s.reset(); root.innerHTML = ""; s.render(root, LB_DATA);
   T.has(root.querySelector("#s6-alerts"), "알림이 없어요");
 });
+
+T.test("s6: sync가 아니면 먼저 노란 주의 단계를 지난다", function () {
+  restoreScenes(); var s = sceneById(6); LB.sync = false;
+  var root = T.stage(""); s.reset(); s.render(root, LB_DATA);
+  root.querySelector("#s6-play").click();
+  T.eq(root.querySelectorAll(".tile.warn").length, 1);
+  T.ok(root.querySelector('.tile[data-tag="LB-0917-11"]').classList.contains("warn"));
+  T.has(root.querySelector(".head .badge"), "주의 1");
+  T.eq(root.querySelectorAll("#s6-timeline li").length, 1);
+  T.ok(!root.querySelector("#s6-a1"), "주의 단계에는 알림 없음");
+  LB.clearTimers(); LB.sync = true;
+});
